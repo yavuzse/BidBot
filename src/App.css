@@ -14,13 +14,13 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #577590;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  font-size: calc(5px + 2vmin);
   color: white;
 }
 
@@ -35,4 +35,77 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+
+input[type=text], 
+input[type=password] {
+    width: 16vw;
+    margin: 5px;
+    border-style: hidden hidden solid hidden;
+    border-bottom: 3px solid #577590;
+    -moz-appearance: textfield;
+}
+
+::-webkit-input-placeholder {
+  text-align: center;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+  text-align: center;  
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+  text-align: center;  
+}
+
+:-ms-input-placeholder {  
+  text-align: center; 
+}
+
+button{
+  margin: 5px;
+
+  background-color: #577590;
+  width: 10vw;
+  height: 5vh;
+  border: 1px solid #577590;
+  border-radius: 5em;
+
+  transition: all 0.3s ease;
+  box-shadow: 0px 10px 20px -6px rgba(0, 0, 0, 0.12);
+  flex-direction: column;
+}
+
+button:hover {
+  background-color: #3D56B2;
+  color: #ffffff;
+}
+
+#contract {
+  display: flex;
+  flex-direction: column;
+  background-color: #282c34;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  width: 50%;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0,
+  0.24);
+}
+
+#contract div {
+  text-align: left;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+#btns {
+  display: flex;
+  flex-direction: row;
+  height: 60px;
+}
+
+label {
+  margin-left: 30px;
 }
