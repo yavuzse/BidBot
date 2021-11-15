@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import './App.css';
 import {Asset, OpenSeaAsset, Order} from "opensea-js/lib/types";
 import HDWalletProvider from '@truffle/hdwallet-provider';
 import Web3 from 'web3';
-import { OpenSeaPort, Network } from 'opensea-js';
+import {OpenSeaPort, Network} from 'opensea-js';
 
 
-function sleep(ms : number) {
+function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -18,7 +18,7 @@ function App() {
     const [endtokid, setEndTokenId] = useState(null);
     const [tokenAddress, setTokenAddress] = useState(null);
     const [expireTime, setExpireTime] = useState(null);
-    const [traitdata, setTraitData] = useState(null);
+    const [floordata, setFloorData] = useState(null);
     const [maxcount, setMaxCount] = useState(null);
     const [val, setval] = useState(null);
     const [traitType, setTraitType] = useState(null);
@@ -27,77 +27,78 @@ function App() {
     const [disable, setDisable] = useState(false);
     const [trait, setTrait] = useState(null);
     const [extrait, setexTrait] = useState(false);
+    const [traitPrint, setTraitPrint] = useState(false);
     const [list, setList] = useState([])
     const [list2, setList2] = useState([])
     const [list3, setList3] = useState([])
 
-    function getPrivateKey(val : any){
+    function getPrivateKey(val: any) {
         setPrivateKey(val.target.value)
     }
 
-    function getPublicKey(val : any){
+    function getPublicKey(val: any) {
         setPublicKey(val.target.value)
     }
 
-    function getBidAmount(val : any){
+    function getBidAmount(val: any) {
         setBidAmount(val.target.value)
     }
 
-    function getStartTokenId(val : any){
+    function getStartTokenId(val: any) {
         setStartTokenId(val.target.value)
     }
 
-    async function getTraitArr(){
+    async function getTraitArr() {
         await setTrait(await getTrait())
     }
 
-    function getEndTokenId(val : any){
+    function getEndTokenId(val: any) {
         setEndTokenId(val.target.value)
     }
 
-    function getTokenAddress(val : any){
+    function getTokenAddress(val: any) {
         setTokenAddress(val.target.value)
     }
 
-    function getExpireTime(val : any){
+    function getExpireTime(val: any) {
         setExpireTime(val.target.value)
     }
 
-    function getTraitData(val: any){
-        setTraitData(val)
+    function getFloorData(val: any) {
+        setFloorData(val)
     }
 
-    function getval(val : any){
+    function getval(val: any) {
         setval(val.target.value)
     }
 
-    function getTraitType(val : any){
+    function getTraitType(val: any) {
         setTraitType(val.target.value)
     }
 
-    function getMaxCount(val : any){
+    function getMaxCount(val: any) {
         setMaxCount(val)
     }
 
-    function connectWallet(){
+    function connectWallet() {
         if (!privateKey) return;
 
-        let provider = new HDWalletProvider(privateKey, "https://mainnet.infura.io/v3/45df25d358e4448c991001858f0aea37");
+        let provider = new HDWalletProvider(privateKey, "wss://rinkeby.infura.io/ws/v3/45df25d358e4448c991001858f0aea37");
 
 
-        const seaport : OpenSeaPort = new OpenSeaPort(provider, {
-            networkName: Network.Main
+        const seaport: OpenSeaPort = new OpenSeaPort(provider, {
+            networkName: Network.Rinkeby
         })
 
-        if(!seaport) throw "Private Key not entered";
+        if (!seaport) alert("Private Key not entered");
         return seaport;
     }
 
-    const offer = async (asset : Asset) => {
+    const offer = async (asset: Asset) => {
         let seaport = connectWallet();
-        if (!asset || !asset.tokenAddress || !asset.tokenId || !seaport || !publicKey || !bidAmount || !expireTime ) return;
+        if (!asset || !asset.tokenAddress || !asset.tokenId || !seaport || !publicKey || !bidAmount || !expireTime) return;
         console.log("s")
-        try{
+        try {
             await seaport.createBuyOrder({
                 asset: asset,
                 accountAddress: publicKey,
@@ -107,18 +108,18 @@ function App() {
             }).catch(err => console.log(err))
             console.log("t")
             alert("placed bid on " + String(asset.tokenId));
-        } catch(e) {
+        } catch (e) {
             throw e;
         }
     }
 
-    async function offerMultiple(){
+    async function offerMultiple() {
         setDisable(true)
         alert("Started Bidding")
-        if(!starttokid || !endtokid || !tokenAddress) return;
+        if (!starttokid || !endtokid || !tokenAddress) return;
 
-        for(let id : number = starttokid; id <= endtokid; id++){
-            let asset2 : Asset = {
+        for (let id: number = starttokid; id <= endtokid; id++) {
+            let asset2: Asset = {
                 tokenId: String(id),
                 tokenAddress: tokenAddress,
             };
@@ -129,19 +130,19 @@ function App() {
         setDisable(false)
     }
 
-    const cancelOffer = async(asset : Asset) =>{
+    const cancelOffer = async (asset: Asset) => {
         let seaport = connectWallet();
         if (!asset || !asset.tokenAddress || !asset.tokenId || !seaport || !publicKey || !bidAmount) return;
 
-        let order1 : Order | void = await seaport.api.getOrder({
+        let order1: Order | void = await seaport.api.getOrder({
             token_id: asset.tokenId,
             bundled: false,
-            limit:20,
-            offset:0,
+            limit: 20,
+            offset: 0,
             asset_contract_address: asset.tokenAddress,
             side: 0
         }).then(async (res) => {
-            if(!seaport) return;
+            if (!seaport) return;
             await seaport.cancelOrder({
                 accountAddress: publicKey,
                 order: res,
@@ -156,13 +157,13 @@ function App() {
         });
     }
 
-    async function cancelMultiple(){
+    async function cancelMultiple() {
         setDisable(true)
         alert("Started Cancelling Process")
-        if(!starttokid || !endtokid || !tokenAddress) return;
+        if (!starttokid || !endtokid || !tokenAddress) return;
 
-        for(let id : number = starttokid; id <= endtokid; id++){
-            let asset2 : Asset = {
+        for (let id: number = starttokid; id <= endtokid; id++) {
+            let asset2: Asset = {
                 tokenId: String(id),
                 tokenAddress: tokenAddress,
             };
@@ -173,7 +174,7 @@ function App() {
         setDisable(false)
     }
 
-    async function maxTokenCount(){
+    async function maxTokenCount() {
         let seaport = connectWallet();
         if (!seaport || !tokenAddress) return;
 
@@ -182,43 +183,41 @@ function App() {
             asset_contract_address: tokenAddress,
             offset: 0
         })
-            .then((res) => {
-                return res;
-            }).catch((err) => {
-                throw err;
-            });
+        .then((res) => {
+            return res;
+        }).catch((err) => {
+            throw err;
+        });
 
-        let maxtok = Number(fAssets.assets[0].tokenId);
-
-        return maxtok;
+        return Number(fAssets.assets[0].tokenId);
     }
 
-    async function traitRaritys(){
+    async function traitRaritys() {
         let seaport = connectWallet();
         if (!seaport || !tokenAddress || !starttokid) return;
 
-        var maxTokenId : number | undefined = await maxTokenCount()
-        if(maxTokenId !== undefined){
-            var maxtok : number = maxTokenId
+        var maxTokenId: number | undefined = await maxTokenCount()
+        if (maxTokenId !== undefined) {
+            var maxtok: number = maxTokenId
         }
-        let json_str : string = "";
-        var index : number = 0;
+        let json_str: string = "";
+        var index: number = 0;
         var trait_counts = new Array();
 
 
         let asset3 = await seaport.api.getAsset({
             tokenId: starttokid,
             tokenAddress: tokenAddress
-        }).then((res) =>{
+        }).then((res) => {
             res.traits.forEach(element => {
                 json_str = JSON.stringify(element);
                 let trait_count = Number(JSON.parse(json_str).trait_count);
-                trait_counts[index] = String((trait_count/maxtok * 100).toFixed(2)) + "%     ";
+                trait_counts[index] = String((trait_count / maxtok * 100).toFixed(2)) + "%     ";
                 index++
             });
             console.warn(trait_counts);
             return trait_counts;
-        }).catch((err : any) => {
+        }).catch((err: any) => {
             throw err;
         });
 
@@ -260,12 +259,12 @@ function App() {
         return rareTraits;
     }
 
-    async function handlebidonspecific(){
+    async function handlebidonspecific() {
         setDisable(true)
         alert("Started bidding on items with specific trait")
-        let rareTraits : OpenSeaAsset[] | undefined = await bidonspecific();
-        if(rareTraits !== undefined){
-            let rares : OpenSeaAsset[] = rareTraits;
+        let rareTraits: OpenSeaAsset[] | undefined = await bidonspecific();
+        if (rareTraits !== undefined) {
+            let rares: OpenSeaAsset[] = rareTraits;
 
             for (var element of rares) {
                 await offer({
@@ -280,17 +279,14 @@ function App() {
     }
 
     async function handlemaxTokenCount() {
-        setDisable(true);
         getMaxCount(await maxTokenCount());
-        setPrintmaxCount(true);
-        setDisable(false);
     }
 
     async function getCollection() {
-        let seaport : OpenSeaPort = connectWallet();
-        if(!seaport || !tokenAddress) return;
+        let seaport: OpenSeaPort = connectWallet();
+        if (!seaport || !tokenAddress) return;
 
-        let collectionName : string = await seaport.api.getAsset({
+        let collectionName: string = await seaport.api.getAsset({
             tokenId: String(1),
             tokenAddress: tokenAddress
         }).then((res) => {
@@ -299,23 +295,21 @@ function App() {
         })
 
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", "https://api.opensea.io/api/v1/collection/" + collectionName, false ); // false for synchronous request
-        xmlHttp.send( null );
+        xmlHttp.open("GET", "https://api.opensea.io/api/v1/collection/" + collectionName, false); // false for synchronous request
+        xmlHttp.send(null);
 
         return JSON.parse(xmlHttp.responseText)
     }
 
-    async function getTrait(){
+    async function getTrait() {
         var parsed = await getCollection()
         var resp = parsed.collection.traits;
         await sleep(1000)
-        await setTrait(resp)
         console.log(resp)
-        await setexTrait(true)
         return resp;
     }
 
-    async function getFloor(){
+    async function getFloor() {
         console.log("started")
         await getTraitArr()
         console.log(trait)
@@ -323,61 +317,64 @@ function App() {
         return parsed.collection.stats.floor_price;
     }
 
-    function renderTrait(){
-        if (!tokenAddress) return;
-        if(tokenAddress.length > 42 || tokenAddress.length <42){
+    function renderTrait() {
+        if (!tokenAddress || !trait) return;
+        if (tokenAddress.length !== 42) {
             return;
         }
 
-        while (list.length){
+        while (list.length) {
             list.pop()
         }
-        getTraitArr().then(r => console.log("success")).catch(r => alert(r +" retry"))
+
         for (var i in trait) {
-            var key = i;
-            var val = trait[i]
-            list.push(key)
+            list.push(i)
         }
+
         sleep(10000)
+
+        setexTrait(true)
     }
 
-    async function renderTraitName(){
-        if (!tokenAddress || !traitType) return;
-        if(tokenAddress.length > 42 || tokenAddress.length <42){
+    async function renderTraitName() {
+        if (!tokenAddress || !traitType || !trait) return;
+        if (tokenAddress.length !== 42) {
             return;
         }
 
-        while (list2.length){
+        while (list2.length) {
             await list2.pop()
         }
 
-        while (list3.length){
+        while (list3.length) {
             await list3.pop()
         }
-
-        var max = await maxTokenCount()
+        await setPrintTrait(false)
 
         for (var i in trait) {
             var key = i;
             var val = trait[i]
-            if(String(traitType) == key){
+            console.log(String(traitType), key)
+            if (String(traitType) === key) {
 
-                console.log(String(traitType), key)
-                for (var j in val){
-                    let percentage = await (Number(val[j]) / max) * 100
-                    list2.push(j+" : "+percentage.toFixed(2).toString() +"%")
+                for (var j in val) {
+                    let percentage = await (Number(val[j]) / maxcount) * 100
+                    list2.push(j + " : " + percentage.toFixed(2).toString() + "%")
                     list3.push(j)
+                    console.log("pushed " + j)
                     //console.log(j+" : "+percentage.toFixed(2).toString() +"%")
                 }
             }
         }
-        await sleep(10000)
+        await sleep(5000)
+
+        await setPrintTrait(true)
 
     }
 
-    async function handle(){
+    async function handleFloor() {
         setDisable(true)
-        await getTraitData(await getFloor());
+        await getFloorData(await getFloor());
         setPrintTrait(true);
         setDisable(false)
     }
@@ -405,7 +402,9 @@ function App() {
                     </div>
                     <div>
                         <label htmlFor="ACO">Asset Contract Owner</label>
-                        <input list="ACOList" type="text" onChange={(e) => {getTokenAddress(e); renderTrait()}} placeholder="Asset Contract Owner" id="ACO"/>
+                        <input list="ACOList" type="text" onChange={(e) => {
+                            getTokenAddress(e);
+                        }} placeholder="Asset Contract Owner" id="ACO"/>
                         <datalist id="ACOList">
                             <option value="0x88091012eedf8dba59d08e27ed7b22008f5d6fe5">Whales</option>
                         </datalist>
@@ -424,10 +423,11 @@ function App() {
                     </div>
                     <div>
                         <label htmlFor="traitCategory">Trait Category</label>
-                        <input list={tokenAddress} type="text" onChange={getTraitType} onClick={renderTrait} placeholder="Trait Category" id="traitCategory"/>
+                        <input list={tokenAddress} type="text" onChange={getTraitType}
+                               placeholder="Trait Category" id="traitCategory"/>
                         <datalist id={tokenAddress}>
                             {
-                                extrait ? list?.map(x => <option value={x}>{x+" "}</option>)
+                                extrait ? list?.map((x, index) => <option value={x}>{x + " " + index}</option>)
                                     : null
                             }
                         </datalist>
@@ -435,37 +435,52 @@ function App() {
                     </div>
                     <div>
                         <label htmlFor="traitName">Trait Name</label>
-                        <input list={traitType} type="text" onChange={getval} onClick={renderTraitName} placeholder="Trait Name" id="traitName"/>
+                        <input list={traitType} type="text" onChange={getval}
+                               placeholder="Trait Name" id="traitName"/>
                         <datalist id={traitType}>
                             {
-                            extrait ? list2?.map((x) => list3?.map((y)=> <option value={y}>{x}</option> ))
-                                : null
+                                printTrait ? list2?.map((x, index) => <option value={list3[index]}>{x}</option>)
+                                    : null
                             }
                         </datalist>
-
 
 
                     </div>
 
                     <div id="btns">
-                        <button disabled={disable} id="offer" onClick={async () => await offerMultiple()} > Offer</button>
-                        <button disabled={disable} id="coffer" onClick={async () => await cancelMultiple()} > cancel Offer</button>
-                        <button disabled={disable} id="trait"onClick={async () => await handle()} > show trait%</button>
-                        <button disabled={disable} onClick={async () => await handlebidonspecific()} > bid on specific trait</button>
-                        <button disabled={disable} onClick={async () => await handlemaxTokenCount()} > Asset Count</button>
-                        <button onClick={async () => window.location.reload()} >Stop</button>
-                        <button onClick={async () => await getTrait()}> Test </button>
-                        <button onClick={async () => await getFloor()}> Test </button>
-
-                        <button onClick={() => renderTraitName()}> render </button>
+                        <button disabled={disable} id="offer" onClick={async () => await offerMultiple()}> Offer
+                        </button>
+                        <button disabled={disable} id="coffer" onClick={async () => await cancelMultiple()}> cancel
+                            Offer
+                        </button>
+                        <button disabled={disable} id="floor" onClick={async () => await handleFloor()}> Collection
+                            Floor
+                        </button>
+                        <button disabled={disable} onClick={async () => await handlebidonspecific()}> bid on specific
+                            trait
+                        </button>
+                        <button disabled={disable} onClick={async () => await handlemaxTokenCount()}> Asset Count
+                        </button>
+                        <button onClick={async () => window.location.reload()}>Stop</button>
+                        <button onClick={() => {
+                            getTraitArr().then(r => console.log("success")).catch(r => alert(r + " retry"))
+                            handlemaxTokenCount().then();
+                        }}> get
+                        </button>
+                        <button onClick={() => {
+                            console.log(trait)
+                            renderTrait();
+                            renderTraitName().then()
+                        }}> render
+                        </button>
                     </div>
                     {
-                        printTrait?
-                            <p>{traitdata}</p>
-                            :null
+                        printTrait ?
+                            <p>{floordata}</p>
+                            : null
                     }
                     {
-                        printmaxCount?
+                        printmaxCount ?
                             <p>{maxcount}</p>
                             : null
                     }
