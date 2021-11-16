@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import './App.css';
-import {Asset, OpenSeaAsset, Order} from "opensea-js/lib/types";
+import {Asset, OpenSeaAsset} from "opensea-js/lib/types";
 import HDWalletProvider from '@truffle/hdwallet-provider';
 import Web3 from 'web3';
 import {OpenSeaPort, Network} from 'opensea-js';
@@ -83,11 +83,11 @@ function App() {
     function connectWallet() {
         if (!privateKey) return;
 
-        let provider = new HDWalletProvider(privateKey, "wss://rinkeby.infura.io/ws/v3/45df25d358e4448c991001858f0aea37");
+        let provider = new HDWalletProvider(privateKey, "https://mainnet.infura.io/v3/45df25d358e4448c991001858f0aea37");
 
 
         const seaport: OpenSeaPort = new OpenSeaPort(provider, {
-            networkName: Network.Rinkeby
+            networkName: Network.Main
         })
 
         if (!seaport) alert("Private Key not entered");
@@ -134,7 +134,7 @@ function App() {
         let seaport = connectWallet();
         if (!asset || !asset.tokenAddress || !asset.tokenId || !seaport || !publicKey || !bidAmount) return;
 
-        let order1: Order | void = await seaport.api.getOrder({
+        await seaport.api.getOrder({
             token_id: asset.tokenId,
             bundled: false,
             limit: 20,
@@ -191,7 +191,7 @@ function App() {
 
         return Number(fAssets.assets[0].tokenId);
     }
-
+/*
     async function traitRaritys() {
         let seaport = connectWallet();
         if (!seaport || !tokenAddress || !starttokid) return;
@@ -222,7 +222,7 @@ function App() {
         });
 
         return await getFloor();
-    }
+    }*/
 
     async function bidonspecific() {
         let seaport = connectWallet();
@@ -234,7 +234,7 @@ function App() {
 
         for (let i = starttokid; i <= endtokid; i++) {
 
-            let asset3: OpenSeaAsset | null = await seaport.api.getAsset({
+            await seaport.api.getAsset({
                 tokenId: String(i),
                 tokenAddress: tokenAddress
             }).then((res) => {
@@ -264,9 +264,8 @@ function App() {
         alert("Started bidding on items with specific trait")
         let rareTraits: OpenSeaAsset[] | undefined = await bidonspecific();
         if (rareTraits !== undefined) {
-            let rares: OpenSeaAsset[] = rareTraits;
 
-            for (var element of rares) {
+            for (let element of rareTraits) {
                 await offer({
                     tokenAddress: element.tokenAddress,
                     tokenId: element.tokenId
@@ -294,7 +293,7 @@ function App() {
             return res.collection.slug;
         })
 
-        var xmlHttp = new XMLHttpRequest();
+        let xmlHttp = new XMLHttpRequest();
         xmlHttp.open("GET", "https://api.opensea.io/api/v1/collection/" + collectionName, false); // false for synchronous request
         xmlHttp.send(null);
 
@@ -302,18 +301,12 @@ function App() {
     }
 
     async function getTrait() {
-        var parsed = await getCollection()
-        var resp = parsed.collection.traits;
-        await sleep(1000)
-        console.log(resp)
-        return resp;
+        let parsed = await getCollection()
+        return parsed.collection.traits;
     }
 
     async function getFloor() {
-        console.log("started")
-        await getTraitArr()
-        console.log(trait)
-        var parsed = await getCollection();
+        let parsed = await getCollection();
         return parsed.collection.stats.floor_price;
     }
 
@@ -327,11 +320,11 @@ function App() {
             list.pop()
         }
 
-        for (var i in trait) {
+        for (let i in trait) {
             list.push(i)
         }
 
-        sleep(10000)
+        sleep(10000).then()
 
         setexTrait(true)
     }
@@ -351,13 +344,13 @@ function App() {
         }
         await setPrintTrait(false)
 
-        for (var i in trait) {
-            var key = i;
-            var val = trait[i]
+        for (let i in trait) {
+            let key = i;
+            let val = trait[i]
             console.log(String(traitType), key)
             if (String(traitType) === key) {
 
-                for (var j in val) {
+                for (let j in val) {
                     let percentage = await (Number(val[j]) / maxcount) * 100
                     list2.push(j + " : " + percentage.toFixed(2).toString() + "%")
                     list3.push(j)
@@ -463,7 +456,7 @@ function App() {
                         </button>
                         <button onClick={async () => window.location.reload()}>Stop</button>
                         <button onClick={() => {
-                            getTraitArr().then(r => console.log("success")).catch(r => alert(r + " retry"))
+                            getTraitArr().then(() => console.log("success")).catch(r => alert(r + " retry"))
                             handlemaxTokenCount().then();
                         }}> get
                         </button>
