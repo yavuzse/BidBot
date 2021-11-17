@@ -82,10 +82,10 @@ function App() {
     function connectWallet() {
         if (!privateKey) return;
 
-        let provider = new HDWalletProvider(privateKey, "https://rinkeby.infura.io/v3/45df25d358e4448c991001858f0aea37");
+        let provider = new HDWalletProvider(privateKey, "https://mainnet.infura.io/v3/45df25d358e4448c991001858f0aea37");
 
         const seaport: OpenSeaPort = new OpenSeaPort(provider, {
-            networkName: Network.Rinkeby
+            networkName: Network.Main
         })
 
         if (!seaport) alert("Private Key not entered");
@@ -435,7 +435,6 @@ function App() {
                         <button disabled={disable} onClick={async () => await handleMaxTokenCount(false)}> Asset Count
                         </button>
                     </div>
-                    <br/>
                     <div>
                         <button onClick={() => {
                             getTraitArr().then(() => console.log("success")).catch(r => alert(r + " retry"))

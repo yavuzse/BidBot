@@ -104,6 +104,7 @@ button:hover {
   display: flex;
   flex-direction: row;
   height: 60px;
+  margin-bottom: 3vh;
 }
 
 label {
